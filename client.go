@@ -35,7 +35,7 @@ func (c *client) write() {
 		}
 	}
 	for oCount := range c.onlineCount {
-		err := c.socket.WriteMessage(websocket.PingMessage, oCount)
+		err := c.socket.WriteMessage(websocket.BinaryMessage, oCount)
 		if err != nil {
 			return
 		}

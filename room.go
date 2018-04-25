@@ -25,7 +25,7 @@ func (r *room) run() {
 			// dołączanie do pokoju
 			r.clients[client] = true
 			for connectedClient := range r.clients {
-				connectedClient.send <- []byte("New person online")
+				connectedClient.onlineCount <- []byte("ddd")
 			}
 		case client := <-r.leave:
 			// opuszczanie pokoju
