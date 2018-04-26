@@ -9,33 +9,25 @@ type client struct {
 	// prowadzącego konwersację z użyciem komunikatora.
 	// socket to gniazdo internetowe do obsługi danego klienta.
 	socket *websocket.Conn
-	// send to kanał, którym są przesyłane komunikaty.
-	send        chan []byte
-	onlineCount chan []byte
-	// room to pokój rozmów używany przez klienta.
-	room *room
+	send   chan interface{}
+	room   *room
 }
 
 func (c *client) read() {
 	defer c.socket.Close()
 	for {
-		_, msg, err := c.socket.ReadMessage()
+		m := chatMessageDto{}
+		err := c.socket.ReadJSON(&m)
 		if err != nil {
 			return
 		}
-		c.room.forward <- msg
+		c.room.forward <- "dd"
 	}
 }
 func (c *client) write() {
 	defer c.socket.Close()
 	for msg := range c.send {
-		err := c.socket.WriteMessage(websocket.TextMessage, msg)
-		if err != nil {
-			return
-		}
-	}
-	for oCount := range c.onlineCount {
-		err := c.socket.WriteMessage(websocket.BinaryMessage, oCount)
+		err := c.socket.WriteJSON(msg)
 		if err != nil {
 			return
 		}

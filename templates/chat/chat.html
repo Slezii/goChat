@@ -38,8 +38,9 @@
             alert("Połączenie zostało zamknięte.");
           }
           socket.onmessage = function(e) {
-            console.log("bum");
-            messages.append($("<li>").text(e.data));
+            console.log(e.data);
+            var parsedObject = JSON.parse(e.data);
+            messages.append($("<li>").text(parsedObject.onlineCount));
 } }
       });
     </script>

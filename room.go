@@ -9,7 +9,7 @@ import (
 
 type room struct {
 	// forward to kanał przechowujący nadsyłane komunikaty, // które należy przesłać do przeglądarki użytkownika. forward chan []byte
-	forward chan []byte
+	forward chan interface{}
 	// join to kanał dla klientów, którzy chcą dołączyć do pokoju.
 	join chan *client
 	// leave to kanał dla klientów, którzy chcą opuścić pokój.
@@ -22,10 +22,9 @@ func (r *room) run() {
 	for {
 		select {
 		case client := <-r.join:
-			// dołączanie do pokoju
 			r.clients[client] = true
 			for connectedClient := range r.clients {
-				connectedClient.onlineCount <- []byte("ddd")
+				connectedClient.send <- onlineCountChangedDto{len(r.clients)}
 			}
 		case client := <-r.leave:
 			// opuszczanie pokoju
@@ -56,7 +55,7 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	client := &client{
 		socket: socket,
-		send:   make(chan []byte, messageBufferSize),
+		send:   make(chan interface{}, messageBufferSize),
 		room:   r,
 	}
 	r.join <- client
@@ -67,7 +66,7 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 func newRoom() *room {
 	return &room{
-		forward: make(chan []byte),
+		forward: make(chan interface{}),
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
