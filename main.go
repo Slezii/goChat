@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/stretchr/gomniauth"
-	"github.com/stretchr/gomniauth/providers/google"
 	"github.com/stretchr/objx"
 )
 
@@ -34,10 +33,7 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := newRoom()
 	gomniauth.SetSecurityKey("QQQQQBBBBBAAAAA")
-	gomniauth.WithProviders(
-		google.New("548099854219-0dqjaaabtm50ap32o6mrbufjch80nabe.apps.googleusercontent.com", "KYTnOkbGr2drHHc3OuKmRiHE",
-			"http://localhost:8080/auth/callback/google"),
-	)
+	gomniauth.WithProviders()
 	http.Handle("/chat", AuthRoute(&templateHandler{filename: "chat.html"}))
 
 	http.Handle("/room", r)
