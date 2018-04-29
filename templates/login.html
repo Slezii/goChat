@@ -10,27 +10,23 @@
 <body>
     <div class="container">
         <div class="page-header">
-
-            Warto zwrócić uwagę, że funkcje http.StripPrefix oraz http.FileServer zwracają obiekty zgodne z interfejsem http.Handler,
-            co z kolei jest zgodne z wzorcem dekoratora zaimplementowanym przez naszą funkcję pomocniczą MustAuth. ebookpoint
-            kopia dla: Jakub Slezak kub.sle@gmail.com
             <h1>Zaloguj się</h1>
         </div>
         <div class="panel panel-danger">
             <div class="panel-heading">
-                <h3 class="panel-title">Aby korzystać z komunikatora, musisz się zalogować
+                <h3 class="panel-title">Aby korzystać z komunikatora, musisz się zalogować
                 </h3>
             </div>
             <div class="panel-body">
-                <p>Wybierz usługę, której chcesz użyć do logowania:</p>
+                <p>Login:</p>
                 <ul>
-                    <li>
+                    <!-- <li>
                         <a href="/auth/login/facebook">Facebook</a>
                     </li>
                     <li>
                         <a href="/auth/login/github">GitHub</a>
                     </li>
-                    <li>
+                    <li> -->
                         <a href="/auth/login/google">Google</a>
                     </li>
                 </ul>

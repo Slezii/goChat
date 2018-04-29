@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/stretchr/objx"
 )
 
 type room struct {
-	// forward to kanał przechowujący nadsyłane komunikaty, // które należy przesłać do przeglądarki użytkownika. forward chan []byte
 	forward chan interface{}
 	join    chan *client
 	leave   chan *client
@@ -52,10 +52,16 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		log.Fatal("ServeHTTP:", err)
 		return
 	}
+	authCookie, err := req.Cookie("auth")
+	if err != nil {
+		log.Fatal("Cookie error: ", err)
+		return
+	}
 	client := &client{
-		socket: socket,
-		send:   make(chan interface{}, messageBufferSize),
-		room:   r,
+		socket:   socket,
+		send:     make(chan interface{}, messageBufferSize),
+		room:     r,
+		userData: objx.MustFromBase64(authCookie.Value),
 	}
 	r.join <- client
 	defer func() { r.leave <- client }()

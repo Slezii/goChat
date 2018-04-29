@@ -8,10 +8,12 @@
     </style>
   </head>
   <body>
+    
     <ul id="messages"></ul>
     <form id="chatbox">
-      <textarea></textarea>
-      <input type="submit" value="Wyślij" />
+        {{.UserData.name}}:<br/>
+        <textarea></textarea>
+        <input type="submit" value="Wyślij" />
     </form>
     <script
     src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -23,7 +25,7 @@
         $("#chatbox").submit(function(){
           if (!msgBox.val()) return false;
           if (!socket) {
-            alert("Błąd: Brak połączenia z serwerem.");
+            alert("Server connection error.");
             return false;
           }
           var messageToSend = {
@@ -35,7 +37,7 @@
           return false;
 });
         if (!window["WebSocket"]) {
-          alert("Błąd: Twoja przeglądarka nie obsługuje technologii WebSocket.")
+          alert("Error, browser not compatible with WebSocket.")
         } else {
           socket = new WebSocket("ws://localhost:8080/room");
           socket.onclose = function() {

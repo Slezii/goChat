@@ -7,9 +7,10 @@ import (
 )
 
 type client struct {
-	socket *websocket.Conn
-	send   chan interface{}
-	room   *room
+	socket   *websocket.Conn
+	send     chan interface{}
+	room     *room
+	userData map[string]interface{}
 }
 
 func (c *client) read() {
@@ -21,6 +22,7 @@ func (c *client) read() {
 			log.Print(err)
 			return
 		}
+		m.Author = c.userData["name"].(string)
 		c.room.forward <- m
 	}
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/objx"
 )
 
 type templateHandler struct {
@@ -21,14 +22,20 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	t.templ.Execute(w, r)
+	data := map[string]interface{}{
+		"Host": r.Host,
+	}
+	if authCookie, err := r.Cookie("auth"); err == nil {
+		data["UserData"] = objx.MustFromBase64(authCookie.Value)
+	}
+	t.templ.Execute(w, data)
 }
 
 func main() {
 	r := newRoom()
-	gomniauth.SetSecurityKey("NASZ KLUCZ AUTORYZACYJNY")
+	gomniauth.SetSecurityKey("QQQQQBBBBBAAAAA")
 	gomniauth.WithProviders(
-		google.New("identyfikator", "klucz_tajny",
+		google.New("548099854219-0dqjaaabtm50ap32o6mrbufjch80nabe.apps.googleusercontent.com", "KYTnOkbGr2drHHc3OuKmRiHE",
 			"http://localhost:8080/auth/callback/google"),
 	)
 	http.Handle("/chat", AuthRoute(&templateHandler{filename: "chat.html"}))
