@@ -1,13 +1,12 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gorilla/websocket"
 )
 
 type client struct {
-	// Typ client reprezentuje pojedynczego użytkownika
-	// prowadzącego konwersację z użyciem komunikatora.
-	// socket to gniazdo internetowe do obsługi danego klienta.
 	socket *websocket.Conn
 	send   chan interface{}
 	room   *room
@@ -16,12 +15,13 @@ type client struct {
 func (c *client) read() {
 	defer c.socket.Close()
 	for {
-		m := chatMessageDto{}
+		var m chatMessageDto
 		err := c.socket.ReadJSON(&m)
 		if err != nil {
+			log.Print(err)
 			return
 		}
-		c.room.forward <- "dd"
+		c.room.forward <- m
 	}
 }
 func (c *client) write() {

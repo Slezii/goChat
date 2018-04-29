@@ -26,7 +26,11 @@
             alert("Błąd: Brak połączenia z serwerem.");
             return false;
           }
-          socket.send(msgBox.val());
+          var messageToSend = {
+            author: "Qbol",
+            message: msgBox.val()
+          }
+          socket.send(JSON.stringify(messageToSend));
           msgBox.val("");
           return false;
 });
@@ -35,12 +39,19 @@
         } else {
           socket = new WebSocket("ws://localhost:8080/room");
           socket.onclose = function() {
-            alert("Połączenie zostało zamknięte.");
+            alert("Connection closed");
           }
           socket.onmessage = function(e) {
-            console.log(e.data);
             var parsedObject = JSON.parse(e.data);
-            messages.append($("<li>").text(parsedObject.onlineCount));
+            console.log(parsedObject);
+            if(parsedObject.onlineCount)
+            {
+              messages.append($("<li>").text("Clients count updated, current count: " + parsedObject.onlineCount));
+            }
+            else if(parsedObject.author && parsedObject.message)
+            {
+              messages.append($("<li>").text(parsedObject.author + ": " + parsedObject.message));
+            }
 } }
       });
     </script>

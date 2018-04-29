@@ -10,10 +10,8 @@ import (
 type room struct {
 	// forward to kanał przechowujący nadsyłane komunikaty, // które należy przesłać do przeglądarki użytkownika. forward chan []byte
 	forward chan interface{}
-	// join to kanał dla klientów, którzy chcą dołączyć do pokoju.
-	join chan *client
-	// leave to kanał dla klientów, którzy chcą opuścić pokój.
-	leave chan *client
+	join    chan *client
+	leave   chan *client
 
 	clients map[*client]bool
 }
@@ -27,11 +25,12 @@ func (r *room) run() {
 				connectedClient.send <- onlineCountChangedDto{len(r.clients)}
 			}
 		case client := <-r.leave:
-			// opuszczanie pokoju
 			delete(r.clients, client)
 			close(client.send)
+			for connectedClient := range r.clients {
+				connectedClient.send <- onlineCountChangedDto{len(r.clients)}
+			}
 		case msg := <-r.forward:
-			// rozsyłanie wiadomości do wszystkich klientów
 			for client := range r.clients {
 				client.send <- msg
 			}
