@@ -1,0 +1,16 @@
+{
+    "hosts": {
+        "database": {
+            "address": "localhost",
+            "name": "Chat"
+        },
+        "server": {
+            "address": "localhost",
+            "port" : "8080"
+        },
+        "googleOauth": {
+            "id": "id",
+            "secret": "secret"
+        }
+    }
+}

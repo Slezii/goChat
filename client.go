@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	. "./dtos"
 	"github.com/gorilla/websocket"
 )
 
@@ -16,7 +17,7 @@ type client struct {
 func (c *client) read() {
 	defer c.socket.Close()
 	for {
-		var m chatMessageDto
+		var m ChatMessageDto
 		err := c.socket.ReadJSON(&m)
 		if err != nil {
 			log.Print(err)

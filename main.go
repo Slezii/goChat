@@ -7,7 +7,11 @@ import (
 	"path/filepath"
 	"sync"
 
+	. "./configs"
+	config "github.com/micro/go-config"
+	"github.com/micro/go-config/source/file"
 	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/google"
 	"github.com/stretchr/objx"
 )
 
@@ -31,9 +35,23 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	r := newRoom()
+
+	conf := config.NewConfig()
+	conf.Load(file.NewSource(
+		file.WithPath("config.json"),
+	))
+	var oAuthConf OAuthConfig
+	conf.Get("hosts", "googleOauth").Scan(&oAuthConf)
+
+	var serverConf ServerConfig
+	conf.Get("hosts", "server").Scan(&serverConf)
 	gomniauth.SetSecurityKey("QQQQQBBBBBAAAAA")
-	gomniauth.WithProviders()
+	gomniauth.WithProviders(
+		google.New(oAuthConf.Id, oAuthConf.Secret,
+			"http://"+serverConf.Address+":"+serverConf.Port+"/auth/callback/google"),
+	)
 	http.Handle("/chat", AuthRoute(&templateHandler{filename: "chat.html"}))
 
 	http.Handle("/room", r)
@@ -43,7 +61,7 @@ func main() {
 	http.HandleFunc("/auth/", loginHandler)
 
 	go r.run()
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":"+serverConf.Port, nil); err != nil {
 		log.Fatal("Fatal:", err)
 	}
 }
